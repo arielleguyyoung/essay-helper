@@ -15,6 +15,10 @@ You can also run plain `claude` here: `CLAUDE.md` tells the main session to foll
 
 > Why the orchestrator runs as the main session: Claude Code subagents cannot launch other subagents, so the manager has to be the top-level session.
 
+## Agent map
+
+Open [`docs/agent-map.html`](docs/agent-map.html) in a browser for a diagram of the team, with a phrase to type for each agent, grouped by point in the university year.
+
 ## How it works
 
 ```

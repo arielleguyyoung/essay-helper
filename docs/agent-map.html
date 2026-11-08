@@ -1,0 +1,268 @@
+<title>Arielle's Agent Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a hub-and-spoke map (you -> orchestrator -> five moments of the year), then trigger cards per moment, then ready-made chains. */
+:root {
+  --bg: #f3f5f7; --surface: #ffffff; --fg: #17202b; --muted: #5a6573; --line: #d4dbe3;
+  --accent: #0f6b62; --accent-soft: #dcefec; --chip: #eef2f6;
+  --m1: #2f6fb0; --m2: #8a5a12; --m3: #a2384f; --m4: #0f6b62; --m5: #5b4fa8;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161c; --surface: #19212a; --fg: #e6ebf0; --muted: #9aa6b4; --line: #2c3743;
+  --accent: #4fc2b4; --accent-soft: #173431; --chip: #222c37;
+  --m1: #7fb2ea; --m2: #e0b065; --m3: #ef8aa0; --m4: #4fc2b4; --m5: #ab9ff0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161c; --surface: #19212a; --fg: #e6ebf0; --muted: #9aa6b4; --line: #2c3743;
+  --accent: #4fc2b4; --accent-soft: #173431; --chip: #222c37;
+  --m1: #7fb2ea; --m2: #e0b065; --m3: #ef8aa0; --m4: #4fc2b4; --m5: #ab9ff0; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 5vw, 44px); font-weight: 700; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 16px; font-weight: 700; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+header { display: grid; gap: 12px; }
+.lede { color: var(--muted); font-size: 17px; }
+code, .mono { font-family: var(--mono); font-size: 13px; }
+
+/* Start box */
+.start { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+.cmd { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cmd code { background: var(--chip); padding: 6px 10px; border-radius: 6px; overflow-wrap: anywhere; }
+
+/* Map */
+.map { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.map svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.map text { font-family: var(--body); fill: var(--fg); }
+.map .small { font-size: 12px; fill: var(--muted); }
+.map .title { font-family: var(--display); font-weight: 700; font-size: 15px; }
+
+/* Moments */
+.moment { display: grid; gap: 14px; }
+.moment-head { display: grid; gap: 4px; border-left: 4px solid var(--c); padding-left: 12px; }
+.moment-head p { color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .agent { font-family: var(--mono); font-size: 12px; color: var(--c); }
+.card p { color: var(--muted); font-size: 14px; }
+.trig { display: flex; gap: 8px; align-items: flex-start; background: var(--chip); border-radius: 6px; padding: 8px 10px; }
+.trig span { font-family: var(--mono); font-size: 13px; flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.trig span::before { content: "› "; color: var(--c); }
+button.copy { font: 500 12px var(--mono); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 3px 8px; cursor: pointer; flex: none; }
+button.copy:hover { border-color: var(--accent); }
+button.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.words { font-size: 13px; color: var(--muted); }
+.words b { color: var(--fg); font-weight: 700; }
+
+/* Chains */
+.chains { display: grid; gap: 10px; }
+.chain { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; }
+.steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; }
+.steps i { font-style: normal; background: var(--accent-soft); color: var(--fg); padding: 3px 8px; border-radius: 999px; }
+.steps b { color: var(--muted); font-weight: 400; }
+
+.note { background: var(--accent-soft); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">essay-helper · agent team · University of Warwick</div>
+    <h1>Arielle's agent map</h1>
+    <p class="lede">You talk to one agent, the orchestrator. It picks the right specialist for you. Agents are grouped below by when you'll need them in the year. Each card has a phrase to copy and type; put in your own topic, module or notes.</p>
+  </header>
+
+  <section class="start" aria-label="How to start">
+    <h2>Start here</h2>
+    <div class="cmd"><code id="start-cmd">claude --agent orchestrator</code><button class="copy" type="button" data-copy="claude --agent orchestrator">Copy</button></div>
+    <p class="words">Run this inside the <b>essay-helper</b> folder, then just ask in plain English. Paste notes or give a file path (for example <code>notes/week3.md</code>) so the agents work from your module material. To pick one agent yourself, say <b>"use the flashcard-generator agent on ..."</b>.</p>
+  </section>
+
+  <section aria-label="Agent map">
+    <div class="map">
+      <svg viewBox="0 0 1060 360" role="img" aria-label="You send a request to the orchestrator, which routes it to five groups of agents">
+        <!-- links -->
+        <g stroke="var(--line)" stroke-width="2" fill="none">
+          <path d="M150 180 H300"/>
+          <path d="M460 180 C540 180 540 40 620 40"/>
+          <path d="M460 180 C540 180 540 110 620 110"/>
+          <path d="M460 180 H620"/>
+          <path d="M460 180 C540 180 540 250 620 250"/>
+          <path d="M460 180 C540 180 540 320 620 320"/>
+        </g>
+        <!-- you -->
+        <rect x="20" y="148" width="130" height="64" rx="10" fill="var(--chip)" stroke="var(--line)"/>
+        <text x="85" y="176" text-anchor="middle" class="title">Arielle</text>
+        <text x="85" y="196" text-anchor="middle" class="small">types a request</text>
+        <!-- orchestrator -->
+        <rect x="300" y="132" width="160" height="96" rx="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+        <text x="380" y="166" text-anchor="middle" class="title">Orchestrator</text>
+        <text x="380" y="186" text-anchor="middle" class="small">routes · chains · quizzes</text>
+        <text x="380" y="204" text-anchor="middle" class="small">checks quality · saves files</text>
+        <!-- moments -->
+        <g>
+          <rect x="620" y="18" width="420" height="44" rx="8" fill="var(--surface)" stroke="var(--m1)" stroke-width="2"/>
+          <text x="636" y="38" class="title" style="fill:var(--m1)">Lectures &amp; seminars</text>
+          <text x="636" y="54" class="small">explainer · study guide · summariser · 80/20 coach</text>
+          <rect x="620" y="88" width="420" height="44" rx="8" fill="var(--surface)" stroke="var(--m2)" stroke-width="2"/>
+          <text x="636" y="108" class="title" style="fill:var(--m2)">Reading &amp; research</text>
+          <text x="636" y="124" class="small">librarian · report researcher · communities</text>
+          <rect x="620" y="158" width="420" height="44" rx="8" fill="var(--surface)" stroke="var(--m3)" stroke-width="2"/>
+          <text x="636" y="178" class="title" style="fill:var(--m3)">Essays &amp; assessed work</text>
+          <text x="636" y="194" class="small">essay planner · editor · style matcher</text>
+          <rect x="620" y="228" width="420" height="44" rx="8" fill="var(--surface)" stroke="var(--m4)" stroke-width="2"/>
+          <text x="636" y="248" class="title" style="fill:var(--m4)">Revision &amp; exams</text>
+          <text x="636" y="264" class="small">predictor · planner · quiz · flashcards · memory · past papers</text>
+          <rect x="620" y="298" width="420" height="44" rx="8" fill="var(--surface)" stroke="var(--m5)" stroke-width="2"/>
+          <text x="636" y="318" class="title" style="fill:var(--m5)">Beyond the module</text>
+          <text x="636" y="334" class="small">problem solver · ideas · speech · email · prompts</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section class="moment" style="--c: var(--m1)">
+    <div class="moment-head"><h2>Lectures &amp; seminars</h2><p>After a lecture, before a seminar, or when a reading lost you.</p></div>
+    <div class="cards">
+      <article class="card"><div class="agent">concept-explainer</div><h3>Explain it until it clicks</h3>
+        <div class="trig"><span>Explain [concept] like I'm 12, then give me the exam-ready version.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>explain</b>, <b>I don't get</b>, <b>like I'm 12</b>, <b>still confused</b></div></article>
+      <article class="card"><div class="agent">study-guide-creator</div><h3>Notes to study guide</h3>
+        <div class="trig"><span>Turn my lecture notes in notes/week3.md into a study guide.</span><button class="copy" type="button">Copy</button></div>
+        <div class="trig"><span>Make a mind map of this chapter: [paste].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>study guide</b>, <b>my notes</b>, <b>chapter</b>, <b>mind map</b>, <b>storytelling</b></div></article>
+      <article class="card"><div class="agent">text-summarizer</div><h3>Seminar reading, fast</h3>
+        <div class="trig"><span>Summarise the key points and takeaways of this article: [link or paste].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>summarise</b>, <b>key points</b>, <b>takeaways</b>, <b>gist</b></div></article>
+      <article class="card"><div class="agent">pareto-learning-coach</div><h3>The 20% that matters</h3>
+        <div class="trig"><span>Give me the 80/20 of [topic] for my module.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>80/20</b>, <b>learn fast</b>, <b>essentials</b></div></article>
+    </div>
+  </section>
+
+  <section class="moment" style="--c: var(--m2)">
+    <div class="moment-head"><h2>Reading &amp; research</h2><p>Building a reading list, writing a report, or finding people who study the same thing.</p></div>
+    <div class="cards">
+      <article class="card"><div class="agent">research-librarian</div><h3>Real papers, real citations</h3>
+        <div class="trig"><span>Find 5 key papers on [topic] with summaries, cited in Harvard style.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>papers</b>, <b>sources</b>, <b>reading list</b>, <b>cite</b>, <b>APA / Harvard / MLA</b>. Check which style your department wants.</div></article>
+      <article class="card"><div class="agent">report-researcher</div><h3>Your research intern</h3>
+        <div class="trig"><span>I'm writing a report on [subject]. Research it and include a step-by-step guide to [outcome].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>report</b>, <b>research</b>, <b>briefing</b></div></article>
+      <article class="card"><div class="agent">community-connector</div><h3>Find your people</h3>
+        <div class="trig"><span>Connect me with communities of learners and experts in [topic].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>community</b>, <b>forum</b>, <b>Discord</b>, <b>subreddit</b>, <b>network</b></div></article>
+    </div>
+  </section>
+
+  <section class="moment" style="--c: var(--m3)">
+    <div class="moment-head"><h2>Essays &amp; assessed work</h2><p>From the assignment brief to the final check before you submit.</p></div>
+    <div class="cards">
+      <article class="card"><div class="agent">essay-planner</div><h3>Plan before you write</h3>
+        <div class="trig"><span>Plan my essay. Here's the brief and marking criteria: [paste].</span><button class="copy" type="button">Copy</button></div>
+        <div class="trig"><span>Give me 3 thesis statements for [question].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>essay</b>, <b>assignment</b>, <b>outline</b>, <b>thesis</b>, <b>rubric</b>, <b>deadline</b></div></article>
+      <article class="card"><div class="agent">editor</div><h3>Proofread &amp; feedback</h3>
+        <div class="trig"><span>Proofread this and tell me how to strengthen my argument: [paste draft].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>proofread</b>, <b>feedback</b>, <b>edit</b>, <b>review my essay</b></div></article>
+      <article class="card"><div class="agent">style-mimic-writer</div><h3>Write in your voice</h3>
+        <div class="trig"><span>Here's a sample of my writing: [paste]. Write 300 words on [topic] in that style.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>in my style</b>, <b>match this tone</b>, <b>write like me</b></div></article>
+    </div>
+  </section>
+
+  <section class="moment" style="--c: var(--m4)">
+    <div class="moment-head"><h2>Revision &amp; exams</h2><p>For the revision weeks and exam period, from first plan to the night before.</p></div>
+    <div class="cards">
+      <article class="card"><div class="agent">exam-predictor</div><h3>What's likely to come up</h3>
+        <div class="trig"><span>Here's my module syllabus and past topics: [paste]. What's most likely on the exam?</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>predict</b>, <b>likely on the exam</b>, <b>exam strategy</b></div></article>
+      <article class="card"><div class="agent">study-planner</div><h3>Revision timetable or cram plan</h3>
+        <div class="trig"><span>I have 14 days until my [module] exam. Build me a day-by-day plan.</span><button class="copy" type="button">Copy</button></div>
+        <div class="trig"><span>My exam is tomorrow at 9am. Give me a survival guide.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>study plan</b>, <b>timetable</b>, <b>days until</b>, <b>exam tomorrow</b>, <b>cram</b></div></article>
+      <article class="card"><div class="agent">quiz-master</div><h3>Quiz me, one at a time</h3>
+        <div class="trig"><span>Quiz me with 10 questions on [topic] and explain every answer.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>quiz me</b>, <b>test me</b>, <b>practice test</b>. The orchestrator asks one question at a time.</div></article>
+      <article class="card"><div class="agent">flashcard-generator</div><h3>Anki / Quizlet deck</h3>
+        <div class="trig"><span>Turn notes/week3.md into Anki flashcards.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>flashcards</b>, <b>Anki</b>, <b>Quizlet</b>. The deck is saved to <code>output/</code> as a .tsv file.</div></article>
+      <article class="card"><div class="agent">memory-hacker</div><h3>Make it stick</h3>
+        <div class="trig"><span>Help me memorise [list] with an acronym or memory palace.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>memorise</b>, <b>mnemonic</b>, <b>remember</b></div></article>
+      <article class="card"><div class="agent">past-paper-coach</div><h3>Answer like a top student</h3>
+        <div class="trig"><span>Here's a past paper question [paste, with marks]. Walk me through answering it.</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>past paper</b>, <b>exam question</b>, <b>model answer</b></div></article>
+    </div>
+  </section>
+
+  <section class="moment" style="--c: var(--m5)">
+    <div class="moment-head"><h2>Beyond the module</h2><p>Societies, placements, side projects, and everyday problems.</p></div>
+    <div class="cards">
+      <article class="card"><div class="agent">problem-solver</div><h3>Step-by-step fix</h3>
+        <div class="trig"><span>Give me a step-by-step guide to solve this problem: [describe].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>solve</b>, <b>how do I</b>, <b>decide</b>, <b>stuck</b></div></article>
+      <article class="card"><div class="agent">idea-generator</div><h3>Fresh ideas</h3>
+        <div class="trig"><span>I need 5 fresh ideas for [society event / project].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>ideas</b>, <b>brainstorm</b></div></article>
+      <article class="card"><div class="agent">launch-speech-writer</div><h3>Launch speech</h3>
+        <div class="trig"><span>Write a launch speech for [product or society] about [problem it fixes].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>launch speech</b>, <b>pitch</b>, <b>announcement</b></div></article>
+      <article class="card"><div class="agent">customer-email-responder</div><h3>Professional email reply</h3>
+        <div class="trig"><span>Reply to this complaint in under 150 words, offering [solution]: [paste].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>reply</b>, <b>email</b>, <b>customer</b>, <b>complaint</b></div></article>
+      <article class="card"><div class="agent">prompt-generator</div><h3>Prompts for you</h3>
+        <div class="trig"><span>Make me 10 prompts for a [course] student on [topic].</span><button class="copy" type="button">Copy</button></div>
+        <div class="words">Trigger words: <b>prompts</b>, <b>prompt list</b></div></article>
+    </div>
+  </section>
+
+  <section class="chains" aria-label="Combined requests">
+    <div class="moment-head" style="--c: var(--accent)"><h2>Ask for several at once</h2><p>One sentence can start a whole chain. The orchestrator passes each result to the next agent.</p></div>
+    <div class="chain">
+      <div class="trig" style="--c: var(--accent)"><span>Make a study guide and flashcards from notes/week3.md, then a 10-day revision plan.</span><button class="copy" type="button">Copy</button></div>
+      <div class="steps"><i>study-guide-creator</i><b>→</b><i>flashcard-generator</i><b>→</b><i>study-planner</i></div>
+    </div>
+    <div class="chain">
+      <div class="trig" style="--c: var(--accent)"><span>Find sources on [topic], then plan my essay on [question].</span><button class="copy" type="button">Copy</button></div>
+      <div class="steps"><i>research-librarian</i><b>→</b><i>essay-planner</i><b>→</b><i>you write a draft</i><b>→</b><i>editor</i></div>
+    </div>
+    <div class="chain">
+      <div class="trig" style="--c: var(--accent)"><span>From my syllabus, predict the exam, plan my revision, then quiz me.</span><button class="copy" type="button">Copy</button></div>
+      <div class="steps"><i>exam-predictor</i><b>→</b><i>study-planner</i><b>→</b><i>quiz-master</i></div>
+    </div>
+    <div class="chain">
+      <div class="trig" style="--c: var(--accent)"><span>Summarise this article, then quiz me on it: [link].</span><button class="copy" type="button">Copy</button></div>
+      <div class="steps"><i>text-summarizer</i><b>→</b><i>quiz-master</i></div>
+    </div>
+  </section>
+
+  <aside class="note">
+    <h3>Before you submit anything</h3>
+    <p>Check your module and department guidance on using AI in assessed work, and follow the university's academic integrity rules. Use the agents to understand, plan, practise and get feedback. Where the essay planner marks <code>[ADD: ...]</code>, put in your own evidence and analysis.</p>
+  </aside>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var text = btn.dataset.copy || btn.previousElementSibling.textContent.trim();
+    var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1400); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(btn.previousElementSibling);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected';
+    };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+});
+</script>
