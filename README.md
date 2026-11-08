@@ -11,6 +11,14 @@ claude --agent orchestrator     # the orchestrator runs as your main session
 
 Then just ask, e.g. *"Quiz me on the causes of the French Revolution"* or *"Here are my lecture notes: ... make a study guide and flashcards."*
 
+### Always on
+
+- **In this repo:** `.claude/settings.json` sets `"agent": "orchestrator"`, so every session opened in this folder (on your computer or in Claude Code on the web) starts as the orchestrator. No flag needed.
+- **In every folder on your computer:** run `scripts/install-global.sh` once. It copies the agents and skills into `~/.claude/` and sets the orchestrator as your default main agent. Re-run it after pulling updates. Undo with `scripts/install-global.sh --uninstall`.
+- **Sessions that are already open** read settings only when they start: exit and reopen with `claude --continue` (or `claude --resume` to pick an older one).
+
+The orchestrator keeps all normal tools, so coding, git and general questions still work; it only routes to the specialists when a request fits one.
+
 You can also run plain `claude` here: `CLAUDE.md` tells the main session to follow the `orchestrate` skill, and `/orchestrate` invokes it explicitly. To call a single specialist directly, name it: *"Use the flashcard-generator agent on notes.md"*.
 
 > Why the orchestrator runs as the main session: Claude Code subagents cannot launch other subagents, so the manager has to be the top-level session.
