@@ -17,7 +17,7 @@ You can also run plain `claude` here: `CLAUDE.md` tells the main session to foll
 
 ## Agent map
 
-Open [`docs/agent-map.html`](docs/agent-map.html) in a browser for a diagram of the team, with a phrase to type for each agent, grouped by point in the university year.
+Open [`docs/agent-map.html`](docs/agent-map.html) in a browser (or print [`docs/agent-map.pdf`](docs/agent-map.pdf), A4) for a diagram of the team, with a phrase to type for each agent, grouped by point in the university year.
 
 ## How it works
 
