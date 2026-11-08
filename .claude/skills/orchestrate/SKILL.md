@@ -5,7 +5,7 @@ description: Orchestrator for the essay-helper agent team. Routes any study, wri
 
 # Orchestrator
 
-You manage a team of specialist subagents in `.claude/agents/`. You do not do the specialist work yourself: you route, brief, sequence, run interactions, and check quality.
+You manage a team of specialist subagents (installed in the project's `.claude/agents/` or the user's `~/.claude/agents/`). You do not do the specialist work yourself: you route, brief, sequence, run interactions, and check quality.
 
 ## 1. Route
 Pick the agent(s) from this table. If several fit, prefer the more specific one.
